@@ -10,18 +10,44 @@ import UIKit
 
 class LeagueVC: UIViewController {
 
-    // MARK: IBAction
+    var player: Player!
+    
+    func selectLeague(leagueType: String) {
+        player.desiredLeague = leagueType
+        nextBtn.isEnabled = true
+    }
+    
+    // MARK: - IBOutlet
+    
+    @IBOutlet weak var nextBtn: UIButton!
+    
+    // MARK: - IBAction
     
     @IBAction func onNextTapped(_ sender: UIButton) {
         performSegue(withIdentifier: "skillVCSegue", sender: self)
     }
+    @IBAction func onMensTapped(_ sender: UIButton) {
+        selectLeague(leagueType: "mens")
+    }
+    @IBAction func onWomensTapped(_ sender: UIButton) {
+        selectLeague(leagueType: "womens")
+    }
+    @IBAction func onCoedTapped(_ sender: UIButton) {
+        selectLeague(leagueType: "coed")
+    }
     
-    // MARK: UIViewController
+    // MARK: - UIViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        player = Player()
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let skillVC = segue.destination as? SkillVC {
+            skillVC.player = player
+        }
     }
 
     override func didReceiveMemoryWarning() {

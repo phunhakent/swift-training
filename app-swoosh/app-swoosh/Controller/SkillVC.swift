@@ -10,6 +10,10 @@ import UIKit
 
 class SkillVC: UIViewController {
 
+    var player: Player!
+    
+    // MARK: - UIViewController
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
