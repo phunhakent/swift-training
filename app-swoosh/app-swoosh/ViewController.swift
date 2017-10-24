@@ -10,9 +10,17 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    // MARK: - IBOutlet
+    
+    @IBOutlet weak var swoosh: UIImageView!
+    @IBOutlet weak var bgImg: UIImageView!
+    
+    
+    // MARK: - UIViewController
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
     }
 
     override func didReceiveMemoryWarning() {
