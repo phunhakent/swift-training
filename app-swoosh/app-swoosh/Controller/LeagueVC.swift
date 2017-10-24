@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  LeagueVC.swift
 //  app-swoosh
 //
 //  Created by Kent Nguyen on 10/24/17.
@@ -8,26 +8,24 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class LeagueVC: UIViewController {
 
-    // MARK: - IBOutlet
+    // MARK: IBAction
     
-    @IBOutlet weak var swoosh: UIImageView!
-    @IBOutlet weak var bgImg: UIImageView!
+    @IBAction func onNextTapped(_ sender: UIButton) {
+        performSegue(withIdentifier: "skillVCSegue", sender: self)
+    }
     
-    
-    // MARK: - UIViewController
+    // MARK: UIViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
+        // Do any additional setup after loading the view.
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-
 }
-
