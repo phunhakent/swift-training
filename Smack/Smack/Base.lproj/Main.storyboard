@@ -148,7 +148,7 @@
                                     <action selector="closeBtnPressed:" destination="4Dc-Nh-675" eventType="touchUpInside" id="mBW-fu-aVu"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rf6-bQ-mJl">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Rf6-bQ-mJl" customClass="RoundedButton" customModule="Smack" customModuleProvider="target">
                                 <rect key="frame" x="62.5" y="292" width="250" height="50"/>
                                 <color key="backgroundColor" red="0.35686274509999999" green="0.62352941179999999" blue="0.79607843140000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
@@ -159,6 +159,11 @@
                                 <state key="normal" title="Login">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="5"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                             </button>
                             <stackView opaque="NO" contentMode="scaleToFill" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="079-Sg-FBR">
                                 <rect key="frame" x="126.5" y="80" width="122.5" height="40"/>
@@ -356,9 +361,10 @@
                                 </state>
                                 <connections>
                                     <action selector="createAccountBtnPressed:" destination="4Dc-Nh-675" eventType="touchUpInside" id="LkF-Vg-FTa"/>
+                                    <action selector="pickAvaPressed:" destination="m95-GZ-nc5" eventType="touchUpInside" id="Zuu-9P-BIe"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SGA-U3-mwb">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SGA-U3-mwb" customClass="RoundedButton" customModule="Smack" customModuleProvider="target">
                                 <rect key="frame" x="62.5" y="597" width="250" height="50"/>
                                 <color key="backgroundColor" red="0.35686274509999999" green="0.62352941179999999" blue="0.79607843140000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
@@ -370,6 +376,14 @@
                                 <state key="normal" title="Create Account">
                                     <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </state>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="5"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="createAccPressed:" destination="m95-GZ-nc5" eventType="touchUpInside" id="DxB-hN-0pG"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4ic-3X-nWX">
                                 <rect key="frame" x="62" y="432" width="251" height="30"/>
@@ -383,6 +397,7 @@
                                 </state>
                                 <connections>
                                     <action selector="createAccountBtnPressed:" destination="4Dc-Nh-675" eventType="touchUpInside" id="mWD-c7-pH1"/>
+                                    <action selector="pickBgPressed:" destination="m95-GZ-nc5" eventType="touchUpInside" id="Jtg-XN-Ek3"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -407,6 +422,10 @@
                         <viewLayoutGuide key="safeArea" id="p7W-4C-hQx"/>
                     </view>
                     <connections>
+                        <outlet property="emailTxt" destination="ZWO-3i-GQG" id="ouc-aV-xHL"/>
+                        <outlet property="passwordTxt" destination="ddo-kE-iqq" id="asG-wy-Z2w"/>
+                        <outlet property="userImg" destination="frw-0o-sNi" id="p8G-DT-eQb"/>
+                        <outlet property="usernameTxt" destination="4su-cp-cXp" id="c8W-v6-syw"/>
                         <segue destination="lyz-s6-KHY" kind="unwind" unwindAction="unwindToChannelVCWithSegue:" id="YBd-Om-RRC"/>
                     </connections>
                 </viewController>
