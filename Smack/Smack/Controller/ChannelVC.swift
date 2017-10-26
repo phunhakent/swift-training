@@ -18,6 +18,10 @@ class ChannelVC: UIViewController {
         performSegue(withIdentifier: TO_LOGIN, sender: nil)
     }
     
+    @IBAction func unwindToChannelVC(withSegue segue: UIStoryboardSegue) {
+        
+    }
+    
     // MARK: - UIViewController
     
     override func viewDidLoad() {
