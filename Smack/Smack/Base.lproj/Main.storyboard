@@ -426,7 +426,7 @@
                         <outlet property="passwordTxt" destination="ddo-kE-iqq" id="asG-wy-Z2w"/>
                         <outlet property="userImg" destination="frw-0o-sNi" id="p8G-DT-eQb"/>
                         <outlet property="usernameTxt" destination="4su-cp-cXp" id="c8W-v6-syw"/>
-                        <segue destination="lyz-s6-KHY" kind="unwind" unwindAction="unwindToChannelVCWithSegue:" id="YBd-Om-RRC"/>
+                        <segue destination="lyz-s6-KHY" kind="unwind" identifier="unwindToChannel" unwindAction="unwindToChannelVCWithSegue:" id="YBd-Om-RRC"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Rgb-S3-8zz" userLabel="First Responder" sceneMemberID="firstResponder"/>

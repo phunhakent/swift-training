@@ -10,6 +10,9 @@ import UIKit
 
 class CreateAccountVC: UIViewController {
 
+    var avatarName = "profileDefault"
+    var avatarColor = "[0.5, 0.5, 0.5, 1]"
+    
     // MARK: - IBOutlet
     @IBOutlet weak var usernameTxt: UITextField!
     @IBOutlet weak var emailTxt: UITextField!
@@ -24,7 +27,8 @@ class CreateAccountVC: UIViewController {
     
     @IBAction func createAccPressed(_ sender: Any) {
         guard let email = emailTxt.text, !email.isEmpty,
-            let password = passwordTxt.text, !password.isEmpty else {
+            let password = passwordTxt.text, !password.isEmpty,
+            let name = usernameTxt.text, !name.isEmpty else {
             return
         }
         
@@ -34,7 +38,12 @@ class CreateAccountVC: UIViewController {
                 
                 AuthService.instance.loginUser(withEmail: email, andPassword: password, completion: { (loginSuccess) in
                     if loginSuccess {
-                        print("Logged in user!", AuthService.instance.authToken)
+                        AuthService.instance.createUser(haveName: name, andEmail: email, andAvatar: self.avatarName, withColor: self.avatarColor, completion: { (success) in
+                            if success {
+                                print(UserDataService.instance.name, UserDataService.instance.email)
+                                self.performSegue(withIdentifier: UNWIND, sender: nil)
+                            }
+                        })
                     }
                 })
             }
