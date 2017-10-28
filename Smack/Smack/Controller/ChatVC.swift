@@ -9,8 +9,6 @@
 import UIKit
 
 class ChatVC: UIViewController {
-
-    
     
     // MARK: - IBOutlet
     @IBOutlet weak var menuBtn: UIButton!
@@ -26,9 +24,19 @@ class ChatVC: UIViewController {
         
         view.addGestureRecognizer(self.revealViewController().panGestureRecognizer())
         view.addGestureRecognizer(self.revealViewController().tapGestureRecognizer())
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
+        
+        if AuthService.instance.isLoggedIn {
+            AuthService.instance.findUserByEmail(completion: { (success) in
+                if success {
+                    NotificationCenter.default.post(name: NOTIF_USER_DATA_DID_CHANGE, object: nil)
+                }
+            })
+            
+            MessageService.instance.findAllChannels(completion: { (success) in
+                if success {
+                    
+                }
+            })
+        }
     }
 }
