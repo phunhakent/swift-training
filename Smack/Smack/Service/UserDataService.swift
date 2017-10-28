@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftyJSON
 
 class UserDataService {
     static let instance = UserDataService()
@@ -27,6 +28,31 @@ class UserDataService {
     
     func setAvatarName(avatarName: String) {
         self.avatarName = avatarName
+    }
+    
+    func returnUIColor(components: String) -> UIColor {
+        let scanner = Scanner(string: components)
+        let comma = CharacterSet(charactersIn: ",")
+        
+        scanner.charactersToBeSkipped = CharacterSet(charactersIn: "[], ")
+        
+        var r, g, b, a: NSString?
+        
+        scanner.scanUpToCharacters(from: comma, into: &r)
+        scanner.scanUpToCharacters(from: comma, into: &g)
+        scanner.scanUpToCharacters(from: comma, into: &b)
+        scanner.scanUpToCharacters(from: comma, into: &a)
+        
+        let defaultColor = UIColor.lightGray
+        
+        guard let red = r?.doubleValue,
+            let green = g?.doubleValue,
+            let blue = b?.doubleValue,
+            let alpha = a?.doubleValue else {
+            return defaultColor
+        }
+        
+        return UIColor(red: CGFloat(red), green: CGFloat(green), blue: CGFloat(blue), alpha: CGFloat(alpha))
     }
     
 }
