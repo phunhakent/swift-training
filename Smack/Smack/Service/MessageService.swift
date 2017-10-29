@@ -14,6 +14,8 @@ class MessageService {
     static let instance = MessageService()
     
     var channels = [Channel]()
+    var messages = [Message]()
+    var selectedChannel: Channel?
     
     func findAllChannels(completion: @escaping CompletionHandler) {
         Alamofire.request(URL_GET_CHANNELS, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: BEARER_HEADER).responseJSON { (response) in
@@ -38,7 +40,7 @@ class MessageService {
 //                    debugPrint(error as Any)
 //                }
                 
-                print(self.channels)
+                NotificationCenter.default.post(name: NOTIF_CHANNELS_LOADED, object: nil)
                 
                 completion(true)
             } else {
@@ -46,5 +48,42 @@ class MessageService {
                 debugPrint(response.result.error as Any)
             }
         }
+    }
+    
+    func findAllMessages(forChannelId channelID: String, completion: @escaping CompletionHandler) {
+        Alamofire.request(URL_GET_MESSAGES, method: .get, parameters: nil, encoding: JSONEncoding.default, headers: BEARER_HEADER).responseJSON { (response) in
+            if response.result.error == nil {
+                guard let data = response.data else { return }
+                
+                self.clearMessages()
+                
+                if let messagesJSON = JSON(data: data).array {
+                    for messageJSON in messagesJSON { 
+                        let message = Message(content: messageJSON["messageBody"].stringValue,
+                                              userName: messageJSON["userName"].stringValue,
+                                              channelId: messageJSON["channelId"].stringValue,
+                                              userAvatar: messageJSON["userAvatar"].stringValue,
+                                              userAvatarColor: messageJSON["userAvatarColor"].stringValue,
+                                              id: messageJSON["_id"].stringValue,
+                                              timestamp: messageJSON["timestamp"].stringValue)
+                        
+                        self.messages.append(message)
+                    }
+                }
+                
+                completion(true)
+            } else {
+                completion(false)
+                debugPrint(response.result.error as Any)
+            }
+        }
+    }
+    
+    func clearMessages(){
+        messages.removeAll()
+    }
+    
+    func clearChannels() {
+        channels.removeAll()
     }
 }

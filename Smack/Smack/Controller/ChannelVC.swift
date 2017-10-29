@@ -19,12 +19,18 @@ class ChannelVC: UIViewController {
             loginBtn.setTitle("Login", for: .normal)
             userImg.image = UIImage(named: "menuProfileIcon")
             userImg.backgroundColor = UIColor.clear
+            
+            channelsTbl.reloadData()
         }
         
     }
     
     @objc func userDataChanged(_ notif: Notification) {
         setupUserInfo()
+    }
+    
+    @objc func channelsLoaded(_ notif: Notification) {
+        channelsTbl.reloadData()
     }
     
     // MARK: - IBOutlet
@@ -44,11 +50,12 @@ class ChannelVC: UIViewController {
         }
     }
     @IBAction func createChannelPressed(_ sender: Any) {
-        let addChannelVC = AddChannelVC()
-        
-        addChannelVC.modalPresentationStyle = .custom
-        
-        present(addChannelVC, animated: true, completion: nil)
+        if AuthService.instance.isLoggedIn {
+            let addChannelVC = AddChannelVC()
+            addChannelVC.modalPresentationStyle = .custom
+            
+            present(addChannelVC, animated: true, completion: nil)
+        } 
     }
     
     @IBAction func unwindToChannelVC(withSegue segue: UIStoryboardSegue) {
@@ -63,6 +70,7 @@ class ChannelVC: UIViewController {
         self.revealViewController().rearViewRevealWidth = self.view.frame.size.width - 60
         
         NotificationCenter.default.addObserver(self, selector: #selector(ChannelVC.userDataChanged(_:)), name: NOTIF_USER_DATA_DID_CHANGE, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(ChannelVC.channelsLoaded(_:)), name: NOTIF_CHANNELS_LOADED, object: nil)
         
         channelsTbl.dataSource = self
         channelsTbl.delegate = self
@@ -72,12 +80,24 @@ class ChannelVC: UIViewController {
         super.viewDidAppear(animated)
         
         setupUserInfo()
+        
+        SocketService.instance.getChannel { (success) in
+            if success {
+                self.channelsTbl.reloadData()
+            }
+        }
     }
 }
 
 // MARK: - UITableViewDelegate
 extension ChannelVC: UITableViewDelegate {
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let channel = MessageService.instance.channels[indexPath.row]
+        MessageService.instance.selectedChannel = channel
+        NotificationCenter.default.post(name: NOTIF_CHANNELS_SELECTED, object: nil)
+        
+        self.revealViewController().revealToggle(animated: true)
+    }
 }
 
 // MARK: - UITableViewDataSource
@@ -88,8 +108,10 @@ extension ChannelVC: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "ChannelCell", for: indexPath) as? ChannelCell {
+            let channel = MessageService.instance.channels[indexPath.row]
             
-            cell.configureCell(withChannel: MessageService.instance.channels[indexPath.row])
+            cell.configureCell(withChannel: channel)
+            cell.isSelected = MessageService.instance.selectedChannel?.id == channel.id
             
             return cell
         }

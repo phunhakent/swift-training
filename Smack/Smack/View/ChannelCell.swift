@@ -11,7 +11,7 @@ import UIKit
 class ChannelCell: UITableViewCell {
 
     func configureCell(withChannel channel: Channel) {
-        channelNameLbl.text = "#\(channel.title)"
+        channelNameLbl.text = "#\(channel.title ?? "")"
     }
     
     // MARK: - IBOutlet
