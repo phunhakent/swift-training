@@ -66,7 +66,7 @@ class MessageService {
                                               userAvatar: messageJSON["userAvatar"].stringValue,
                                               userAvatarColor: messageJSON["userAvatarColor"].stringValue,
                                               id: messageJSON["_id"].stringValue,
-                                              timestamp: messageJSON["timestamp"].stringValue)
+                                              timestamp: messageJSON["timeStamp"].stringValue)
                         
                         self.messages.append(message)
                     }
