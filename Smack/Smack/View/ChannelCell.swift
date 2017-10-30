@@ -12,6 +12,13 @@ class ChannelCell: UITableViewCell {
 
     func configureCell(withChannel channel: Channel) {
         channelNameLbl.text = "#\(channel.title ?? "")"
+        channelNameLbl.font = UIFont(name: "HelveticaNeue-Regular", size: 17)
+        
+        for id in MessageService.instance.unreadChannels {
+            if id == channel.id {
+                channelNameLbl.font = UIFont(name: "HelveticaNeue-Bold", size: 22)
+            }
+        }
     }
     
     // MARK: - IBOutlet
@@ -19,9 +26,7 @@ class ChannelCell: UITableViewCell {
     
     // MARK: - UITableViewCell
     override func awakeFromNib() {
-        super.awakeFromNib()
-        
-        
+        super.awakeFromNib() 
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

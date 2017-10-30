@@ -127,13 +127,26 @@ class ChatVC: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(ChatVC.userDataDidChanged(_:)), name: NOTIF_USER_DATA_DID_CHANGE, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(ChatVC.channelSelected(_:)), name: NOTIF_CHANNELS_SELECTED, object: nil)
         
-        SocketService.instance.getChatMessages { (success) in
-            if success {
+//        SocketService.instance.getChatMessages { (success) in
+//            if success {
+//                self.messagesTbl.reloadData()
+//
+//                if MessageService.instance.messages.count > 0 {
+//                    let indexPath = IndexPath(row: MessageService.instance.messages.count - 1, section: 0)
+//                    self.messagesTbl.scrollToRow(at: indexPath, at: UITableViewScrollPosition.bottom, animated: false)
+//                }
+//            }
+//        }
+        
+        SocketService.instance.getChatMessages { (message) in
+            if message.channelId == MessageService.instance.selectedChannel?.id && AuthService.instance.isLoggedIn {
+                MessageService.instance.messages.append(message)
+                
                 self.messagesTbl.reloadData()
                 
                 if MessageService.instance.messages.count > 0 {
-                    let indexPath = IndexPath(row: MessageService.instance.messages.count - 1, section: 0)
-                    self.messagesTbl.scrollToRow(at: indexPath, at: UITableViewScrollPosition.bottom, animated: false)
+                    let endIndex = IndexPath(row: MessageService.instance.messages.count - 1, section: 0)
+                    self.messagesTbl.scrollToRow(at: endIndex, at: .bottom, animated: false)
                 }
             }
         }
