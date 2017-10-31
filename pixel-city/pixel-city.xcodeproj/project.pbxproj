@@ -13,6 +13,8 @@
 		8B613BD91FA71C3D009513FE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B613BD71FA71C3D009513FE /* Main.storyboard */; };
 		8B613BDB1FA71C3D009513FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8B613BDA1FA71C3D009513FE /* Assets.xcassets */; };
 		8B613BDE1FA71C3D009513FE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B613BDC1FA71C3D009513FE /* LaunchScreen.storyboard */; };
+		8B77494E1FA8D0B50009BF0D /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B77494D1FA8D0B50009BF0D /* PhotoCell.swift */; };
+		8B7749501FA8DB8B0009BF0D /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B77494F1FA8DB8B0009BF0D /* Constants.swift */; };
 		8BBE13601FA85CDC0033EB96 /* DroppablePin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BBE135F1FA85CDC0033EB96 /* DroppablePin.swift */; };
 		8BCAE8521FA790ED006DF1F8 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8BCAE8511FA790ED006DF1F8 /* MapKit.framework */; };
 /* End PBXBuildFile section */
@@ -26,6 +28,8 @@
 		8B613BDA1FA71C3D009513FE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8B613BDD1FA71C3D009513FE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		8B613BDF1FA71C3D009513FE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8B77494D1FA8D0B50009BF0D /* PhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
+		8B77494F1FA8DB8B0009BF0D /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		8BBE135F1FA85CDC0033EB96 /* DroppablePin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DroppablePin.swift; sourceTree = "<group>"; };
 		8BCAE8511FA790ED006DF1F8 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		BCF9C396FE6B842B48C13A2E /* Pods_pixel_city.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_pixel_city.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -99,6 +103,7 @@
 			isa = PBXGroup;
 			children = (
 				8BBE135F1FA85CDC0033EB96 /* DroppablePin.swift */,
+				8B77494D1FA8D0B50009BF0D /* PhotoCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -114,6 +119,7 @@
 		8BE6969A1FA7812D003C6378 /* Ultilities */ = {
 			isa = PBXGroup;
 			children = (
+				8B77494F1FA8DB8B0009BF0D /* Constants.swift */,
 			);
 			path = Ultilities;
 			sourceTree = "<group>";
@@ -263,6 +269,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B7749501FA8DB8B0009BF0D /* Constants.swift in Sources */,
+				8B77494E1FA8D0B50009BF0D /* PhotoCell.swift in Sources */,
 				8B613BD61FA71C3D009513FE /* MapVC.swift in Sources */,
 				8BBE13601FA85CDC0033EB96 /* DroppablePin.swift in Sources */,
 				8B613BD41FA71C3D009513FE /* AppDelegate.swift in Sources */,

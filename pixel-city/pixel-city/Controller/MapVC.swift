@@ -9,16 +9,22 @@
 import UIKit
 import MapKit
 import CoreLocation
+import Alamofire
+import AlamofireImage
 
 class MapVC: UIViewController {
 
     let authorizationStatus = CLLocationManager.authorizationStatus()
     let regionRadius: Double = 1000
     let screenSize = UIScreen.main.bounds
+    let locationManager = CLLocationManager()
+    let flowLayout = UICollectionViewFlowLayout()
     
-    var locationManager = CLLocationManager()
     var spinner: UIActivityIndicatorView?
     var progressLbl: UILabel?
+    var photoCollectionView: UICollectionView?
+    var imageUrlArray = [String]()
+    var imageArray = [UIImage]()
     
     func configureLocationService() {
         if authorizationStatus == CLAuthorizationStatus.notDetermined {
@@ -62,11 +68,23 @@ class MapVC: UIViewController {
     
     func addSpinner() {
         spinner = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
-        spinner?.color = #colorLiteral(red: 0.9647058824, green: 0.6509803922, blue: 0.137254902, alpha: 1)
-        spinner?.center = CGPoint(x: (screenSize.width / 2) - ((spinner?.frame.width)! / 2), y: 150 - ((spinner?.frame.height)! / 2))
+        spinner?.color = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
+        spinner?.center = CGPoint(x: screenSize.width / 2, y: 150 - ((spinner?.frame.height)! / 2))
         spinner?.startAnimating()
         
-        pullUpView.addSubview(spinner!)
+        photoCollectionView?.addSubview(spinner!)
+    }
+    
+    func addProgressLbl() {
+        progressLbl = UILabel()
+        progressLbl?.frame = CGRect(x: (screenSize.width / 2) - 120, y: 175, width: 240, height: 40)
+        progressLbl?.font = UIFont(name: "Avenir Next", size: 14)
+        progressLbl?.textColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
+        progressLbl?.textAlignment = .center
+        progressLbl?.text = "..."
+        //progressLbl?.text = "12/40 PHOTO LOADED"
+        
+        photoCollectionView?.addSubview(progressLbl!)
     }
     
     func removePin() {
@@ -75,24 +93,84 @@ class MapVC: UIViewController {
         }
     }
     
+    func cancelAllSessions() {
+        Alamofire.SessionManager.default.session.getTasksWithCompletionHandler { (sessionDataTask, uploadData, downloadData) in
+            sessionDataTask.forEach({ $0.cancel() })
+            downloadData.forEach({ $0.cancel() })
+        }
+    }
+    
+    func retrieveImages(completion: @escaping (_ status: Bool) -> Void) {
+        imageArray = []
+        
+        for url in imageUrlArray {
+            Alamofire.request(url).responseImage(completionHandler: { (response) in
+                guard let image = response.result.value else { return }
+                
+                self.imageArray.append(image)
+                UIView.animate(withDuration: 0.2, animations: {
+                    self.progressLbl?.text = "\(self.imageArray.count)/\(self.imageUrlArray.count) PHOTOS DOWNLOADED"
+                })
+                
+                
+                if self.imageArray.count == self.imageUrlArray.count {
+                    completion(true)
+                }
+            })
+        }
+    }
+    
+    func retrieveUrls(forAnnotation annotation: DroppablePin, completion: @escaping (_ status: Bool) -> Void){
+        imageUrlArray = []
+        Alamofire.request(flickrUrl(forApiKey: apiKey, withAnnotaion: annotation, andNumberOfPhotos: 40)).responseJSON { (response) in
+//            guard let data = response.data else {
+//                completion(false)
+//                return
+//            }
+            
+            guard let json = response.result.value as? Dictionary<String, Any>,
+                let photosDict = json["photos"] as? Dictionary<String, Any>,
+                let photosArray = photosDict["photo"] as? [Dictionary<String, Any>] else {
+                completion(false)
+                return
+            }
+            
+            for photo in photosArray {
+                let postUrl = "https://farm\(photo["farm"]!).staticflickr.com/\(photo["server"]!)/\(photo["id"]!)_\(photo["secret"]!)_\(photo["secret"]!)_h_d.jpg"
+                
+                self.imageUrlArray.append(postUrl)
+            }
+            
+            completion(true)
+        }
+    }
+    
     @objc func swipeHandler(_ swipeGestureRecognizer: UISwipeGestureRecognizer) {
-        pullUpView.removeGestureRecognizer(pullUpView.gestureRecognizers!.first!)
+        self.cancelAllSessions()
+        self.pullUpViewHeightConstraint.constant = 0
         UIView.animate(withDuration: 0.3, animations: {
-            self.pullUpViewHeightConstraint.constant = 0
+            self.view.setNeedsDisplay()
         }) { (finished) in
             if finished {
                 self.spinner?.removeFromSuperview()
-                
                 self.spinner = nil
+                
+                self.pullUpView.removeGestureRecognizer(self.pullUpView.gestureRecognizers!.first!)
+                
+                self.progressLbl?.removeFromSuperview()
+                self.progressLbl = nil
             }
         }
     }
     
     @objc func doubleTapHandler(_ tapGestureRecognizer: UITapGestureRecognizer) {
+        cancelAllSessions()
+        
         removePin()
         animateViewUp()
         addSwipe()
         addSpinner()
+        addProgressLbl()
         
         let touchPoint = tapGestureRecognizer.location(in: mapView)
         let touchCoordinate = mapView.convert(touchPoint, toCoordinateFrom: mapView)
@@ -102,6 +180,22 @@ class MapVC: UIViewController {
         
         let coordinateRegion = MKCoordinateRegionMakeWithDistance(touchCoordinate, regionRadius * 2, regionRadius * 2)
         mapView.setRegion(coordinateRegion, animated: true)
+        
+        retrieveUrls(forAnnotation: annotation) { (finished) in
+            if finished {
+                self.retrieveImages(completion: { (finished) in
+                    if finished {
+                        self.spinner?.removeFromSuperview()
+                        self.spinner = nil
+                        
+                        self.progressLbl?.removeFromSuperview()
+                        self.progressLbl = nil
+                        
+                        self.photoCollectionView?.reloadData()
+                    }
+                })
+            }
+        }
     }
     
     // MARK: - IBOutlet
@@ -129,9 +223,38 @@ class MapVC: UIViewController {
         
         configureLocationService()
         addDoubleTap()
+        
+        photoCollectionView = UICollectionView(frame: view.bounds, collectionViewLayout: flowLayout)
+        photoCollectionView?.register(PhotoCell.self, forCellWithReuseIdentifier: "photoCell")
+        photoCollectionView?.delegate = self
+        photoCollectionView?.dataSource = self
+        photoCollectionView?.backgroundColor = #colorLiteral(red: 0.9647058824, green: 0.6509803922, blue: 0.137254902, alpha: 1)
+        
+        pullUpView.addSubview(photoCollectionView!)
     }
 }
 
+// MARK: - UICollectionViewDataSource
+extension MapVC: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return imageArray.count
+    }
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as! PhotoCell
+        
+        return cell
+    }
+}
+
+// MARK: - UICollectionViewDelegate
+extension MapVC: UICollectionViewDelegate {
+    
+}
 
 // MARK: - UIGestureRecognizerDelegate
 extension MapVC: UIGestureRecognizerDelegate {
@@ -141,7 +264,7 @@ extension MapVC: UIGestureRecognizerDelegate {
             return nil
         }
         
-        var pinAnnotation = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "droppablePin")
+        let pinAnnotation = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "droppablePin")
         
         pinAnnotation.pinTintColor = #colorLiteral(red: 0.9647058824, green: 0.6509803922, blue: 0.137254902, alpha: 1)
         pinAnnotation.animatesDrop = true
