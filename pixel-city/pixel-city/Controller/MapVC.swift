@@ -101,8 +101,6 @@ class MapVC: UIViewController {
     }
     
     func retrieveImages(completion: @escaping (_ status: Bool) -> Void) {
-        imageArray = []
-        
         for url in imageUrlArray {
             Alamofire.request(url).responseImage(completionHandler: { (response) in
                 guard let image = response.result.value else { return }
@@ -120,8 +118,7 @@ class MapVC: UIViewController {
         }
     }
     
-    func retrieveUrls(forAnnotation annotation: DroppablePin, completion: @escaping (_ status: Bool) -> Void){
-        imageUrlArray = []
+    func retrieveUrls(forAnnotation annotation: DroppablePin, completion: @escaping (_ status: Bool) -> Void) { 
         Alamofire.request(flickrUrl(forApiKey: apiKey, withAnnotaion: annotation, andNumberOfPhotos: 40)).responseJSON { (response) in
 //            guard let data = response.data else {
 //                completion(false)
@@ -165,6 +162,11 @@ class MapVC: UIViewController {
     
     @objc func doubleTapHandler(_ tapGestureRecognizer: UITapGestureRecognizer) {
         cancelAllSessions()
+        
+        imageArray = []
+        imageUrlArray = []
+        
+        photoCollectionView?.reloadData()
         
         removePin()
         animateViewUp()
@@ -230,6 +232,8 @@ class MapVC: UIViewController {
         photoCollectionView?.dataSource = self
         photoCollectionView?.backgroundColor = #colorLiteral(red: 0.9647058824, green: 0.6509803922, blue: 0.137254902, alpha: 1)
         
+        registerForPreviewing(with: self, sourceView: photoCollectionView!)
+        
         pullUpView.addSubview(photoCollectionView!)
     }
 }
@@ -245,7 +249,11 @@ extension MapVC: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as! PhotoCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? PhotoCell else { return UICollectionViewCell() }
+        
+        let imageFromIndex = imageArray[indexPath.row]
+        let imageView = UIImageView(image: imageFromIndex)
+        cell.addSubview(imageView)
         
         return cell
     }
@@ -253,7 +261,15 @@ extension MapVC: UICollectionViewDataSource {
 
 // MARK: - UICollectionViewDelegate
 extension MapVC: UICollectionViewDelegate {
-    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let popVC = storyboard?.instantiateViewController(withIdentifier: "popVC") as? PopVC else {
+            return
+        }
+        
+        popVC.initData(forImage: imageArray[indexPath.row])
+        
+        present(popVC, animated: true, completion: nil)
+    }
 }
 
 // MARK: - UIGestureRecognizerDelegate
@@ -282,6 +298,30 @@ extension MapVC: MKMapViewDelegate {
 extension MapVC: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         centerMapOnUserLocation()
+    }
+}
+
+// MARK: - UIViewControllerPreviewingDelegate (support 3D touch)
+extension MapVC: UIViewControllerPreviewingDelegate {
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
+        guard let indexPath = photoCollectionView?.indexPathForItem(at: location),
+            let cell = photoCollectionView?.cellForItem(at: indexPath) else {
+                return nil
+        }
+        
+        guard let popVC = storyboard?.instantiateViewController(withIdentifier: "PopVC") as? PopVC else {
+            return nil
+        }
+        
+        popVC.initData(forImage: imageArray[indexPath.row])
+        
+        previewingContext.sourceRect = cell.contentView.frame
+        
+        return popVC
+    }
+    
+    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
+        show(viewControllerToCommit, sender: self)
     }
 }
 

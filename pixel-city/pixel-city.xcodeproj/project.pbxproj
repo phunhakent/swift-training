@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4FD365B028D1033F0DE26005 /* Pods_pixel_city.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCF9C396FE6B842B48C13A2E /* Pods_pixel_city.framework */; };
+		8B4D001F1FAA1EEC005D9B1B /* PopVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B4D001E1FAA1EEC005D9B1B /* PopVC.swift */; };
 		8B613BD41FA71C3D009513FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B613BD31FA71C3D009513FE /* AppDelegate.swift */; };
 		8B613BD61FA71C3D009513FE /* MapVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B613BD51FA71C3D009513FE /* MapVC.swift */; };
 		8B613BD91FA71C3D009513FE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8B613BD71FA71C3D009513FE /* Main.storyboard */; };
@@ -21,6 +22,7 @@
 
 /* Begin PBXFileReference section */
 		3A7FA4A65A806192204AB2CB /* Pods-pixel-city.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-pixel-city.release.xcconfig"; path = "Pods/Target Support Files/Pods-pixel-city/Pods-pixel-city.release.xcconfig"; sourceTree = "<group>"; };
+		8B4D001E1FAA1EEC005D9B1B /* PopVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopVC.swift; sourceTree = "<group>"; };
 		8B613BD01FA71C3D009513FE /* pixel-city.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "pixel-city.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B613BD31FA71C3D009513FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8B613BD51FA71C3D009513FE /* MapVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapVC.swift; sourceTree = "<group>"; };
@@ -112,6 +114,7 @@
 			isa = PBXGroup;
 			children = (
 				8B613BD51FA71C3D009513FE /* MapVC.swift */,
+				8B4D001E1FAA1EEC005D9B1B /* PopVC.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -269,6 +272,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B4D001F1FAA1EEC005D9B1B /* PopVC.swift in Sources */,
 				8B7749501FA8DB8B0009BF0D /* Constants.swift in Sources */,
 				8B77494E1FA8D0B50009BF0D /* PhotoCell.swift in Sources */,
 				8B613BD61FA71C3D009513FE /* MapVC.swift in Sources */,
