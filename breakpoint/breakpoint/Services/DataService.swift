@@ -50,4 +50,35 @@ class DataService {
             sendComplete(true)
         }
     }
+    
+    func getUsername(forUID uid: String, handler: @escaping (_ userName: String?) -> Void) {
+        REF_USERS.observeSingleEvent(of: .value) { (userSnapshot) in
+            guard let userSnapshot = userSnapshot.children.allObjects as? [DataSnapshot] else { return }
+            
+            for user in userSnapshot {
+                if user.key == uid {
+                    handler(user.childSnapshot(forPath: "email").value as? String)
+                } else {
+                    handler(nil)
+                }
+            }
+            
+        }
+    }
+    
+    func getAllFeedMessages(handler: @escaping (_ messages: [Message]) -> Void) {
+        var messageArray = [Message]()
+        REF_FEED.observeSingleEvent(of: DataEventType.value) { (feedMessageSnapshot) in
+            guard let feedMessageSnapshot = feedMessageSnapshot.children.allObjects as? [DataSnapshot] else { return }
+            
+            for message in feedMessageSnapshot {
+                let content = message.childSnapshot(forPath: "content").value as! String
+                let senderId = message.childSnapshot(forPath: "senderId").value as! String
+                
+                messageArray.append(Message(content: content, senderId: senderId))
+            }
+            
+            handler(messageArray)
+        }
+    }
 }

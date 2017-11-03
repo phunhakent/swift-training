@@ -10,7 +10,7 @@ import UIKit
 import Firebase
 
 class CreatePostVC: UIViewController {
- 
+    
     @IBOutlet weak var messageTv: UITextView!
     @IBOutlet weak var userImg: UIImageView!
     @IBOutlet weak var emailLbl: UILabel!
@@ -36,6 +36,11 @@ class CreatePostVC: UIViewController {
         }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        emailLbl.text = Auth.auth().currentUser?.email
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
