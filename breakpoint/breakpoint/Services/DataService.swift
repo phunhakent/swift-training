@@ -42,12 +42,35 @@ class DataService {
     func uploadPost(withMessage message: String, forUID uid: String, withGroupKey groupKey: String?, sendComplete: @escaping (_ status: Bool) -> Void) {
         if groupKey != nil {
             // send to group ref
+            REF_GROUPS.child(groupKey!).child("messages").childByAutoId().updateChildValues([
+                "content": message,
+                "senderId": uid
+            ])
+            
+            sendComplete(true)
         } else {
             REF_FEED.childByAutoId().updateChildValues([
                 "content": message,
                 "senderId": uid
             ])
             sendComplete(true)
+        }
+    }
+    
+    func getAllMessagesFor(desiredGroup group: Group, completion: @escaping (_ messages: [Message]) -> Void) {
+        REF_GROUPS.child(group.key).child("messages").observeSingleEvent(of: .value) { (messageSnapshot) in
+            guard let messageSnapshot = messageSnapshot.children.allObjects as? [DataSnapshot] else { return }
+            
+            var messages = [Message]()
+            
+            for message in messageSnapshot {
+                let content = message.childSnapshot(forPath: "content").value as! String
+                let senderId = message.childSnapshot(forPath: "senderId").value as! String
+                
+                let message = Message(content: content, senderId: senderId)
+                
+                messages.append(message)
+            }
         }
     }
     
@@ -79,6 +102,78 @@ class DataService {
             }
             
             handler(messageArray)
+        }
+    }
+    
+    func getEmail(forSearchQuery query: String, handler: @escaping (_ emailArray: [String]) -> Void) {
+        REF_USERS.observeSingleEvent(of: DataEventType.value) { (dataSnapshot) in
+            guard let userSnapshot = dataSnapshot.children.allObjects as? [DataSnapshot] else { return }
+         
+            var emailArray = [String]()
+            for user in userSnapshot {
+                if let userEmail = user.childSnapshot(forPath: "email").value as? String,
+                    userEmail.contains(query),
+                    userEmail != Auth.auth().currentUser?.email {
+                    emailArray.append(userEmail)
+                }
+            }
+            
+            handler(emailArray)
+        }
+    } 
+    
+    func getIds(forUserNames usernames: [String], completion: @escaping (_ uidArray: [String]) -> Void) {
+        REF_USERS.observeSingleEvent(of: .value) { (userSnapshot) in
+            guard let userSnapshot = userSnapshot.children.allObjects as? [DataSnapshot] else { return }
+            
+            var uidArray = [String]()
+            
+            for user in userSnapshot {
+                if usernames.contains(user.childSnapshot(forPath: "email").value as! String) {
+                    uidArray.append(user.key)
+                }
+            }
+            
+            completion(uidArray)
+        }
+    }
+    
+    func getEmails(forGroup group: Group, completion: @escaping (_ emails: [String]) -> Void) {
+        REF_USERS.observeSingleEvent(of: .value) { (userSnapshot) in
+            guard let userSnapshot = userSnapshot.children.allObjects as? [DataSnapshot] else { return }
+            
+            var emails = [String]()
+            
+            for user in userSnapshot.filter({ group.members.contains($0.key) }) {
+                emails.append(user.childSnapshot(forPath: "email").value as! String)
+            }
+            
+            completion(emails)
+        }
+    }
+    
+    func createGroup(withTitle title: String, andDescription description: String, forUserIds uid: [String], completion: @escaping (_ success: Bool) -> Void) {
+        REF_GROUPS.childByAutoId().updateChildValues([ "title" : title, "description": description, "members": uid ])
+        
+        completion(true)
+    }
+    
+    func getAllGroups(completion: @escaping (_ groups: [Group]) -> Void) {
+        REF_GROUPS.observeSingleEvent(of: .value) { (groupSnapshot) in
+            guard let groupSnapshot = groupSnapshot.children.allObjects as? [DataSnapshot] else {
+                return
+            }
+            
+            var groups = [Group]()
+            for group in groupSnapshot {
+                if let memberArray = group.childSnapshot(forPath: "members").value as? [String], memberArray.contains(Auth.auth().currentUser!.uid),
+                    let title = group.childSnapshot(forPath: "title").value as? String,
+                    let description = group.childSnapshot(forPath: "description").value as? String {
+                    groups.append(Group(title: title, description: description, key: group.key, members: memberArray))
+                }
+            }
+                
+            completion(groups)
         }
     }
 }
